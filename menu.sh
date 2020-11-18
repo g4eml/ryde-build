@@ -42,11 +42,11 @@ do_info()
 }
 
 
-do_Set_RC_Type()
+do_Set_RC_Type_1()
 {
-  RC_FILE=""
+  RC_FILE="exit"
 
-  menuchoice=$(whiptail --title "Set Remote Control Model" --menu "Select Choice" 30 78 20 \
+  menuchoice=$(whiptail --title "Set Remote Control Model" --menu "Select Choice and press enter" 20 78 11 \
     "1 Virgin" "Virgin Media"  \
     "2 Nebula" "Nebula DigiTV DVB-T USB Receiver" \
     "3 DVB-T2-S2" "eBay DVB-T2-S2 Combo with 12v in " \
@@ -57,17 +57,7 @@ do_Set_RC_Type()
     "8 Elekta TV" "Elekta Bravo 19 inch TV" \
     "9 WDTV Live" "WDTV Live Media Player" \
     "10 Hauppauge 1" "Hauppauge MediaMVP Network Media Player" \
-    "11 Hauppauge 2" "Hauppauge USB PVR Ex-digilite" \
-    "12 TS-1 Sat" "Technosat TS-1 Satellite Receiver" \
-    "13 TS-3500" "Technosat TS-3500 Satellite Receiver" \
-    "14 F-2100 Uni" "Digi-Wav 2 Pound F2100 Universal Remote" \
-    "15 SF8008" "Octagon SF8008 Sat RX Remote" \
-    "16 Freesat V7" "Freesat V7 Combo - Some keys changed" \
-    "17 RTL-SDR" "RTL-SDR Basic Remote" \
-    "18 Avermedia" "AverMedia PC Card Tuner" \
-    "19 AEG DVD" "German AEG DVD Remote" \
-    "20 G-RCU-023" "German Remote from an Opticum HD AX150, labelled G-RCU-023" \
-    "21 Exit" "Exit without changing remote control model" \
+    "99 Exit" "Exit without changing remote control model" \
       3>&2 2>&1 1>&3)
     case "$menuchoice" in
         1\ *) RC_FILE="virgin" ;;
@@ -79,7 +69,36 @@ do_Set_RC_Type()
         7\ *) RC_FILE="samsung_32" ;;
         8\ *) RC_FILE="elekta_tv" ;;
         9\ *) RC_FILE="wdtv_live" ;;
-        10\ *) RC_FILE="hauppauge_mvp" ;;
+        10\ *) RC_FILE="Hauppauge_mvp" ;;
+        99\ *) RC_FILE="exit" ;;
+    esac
+
+  if [ "$RC_FILE" != "exit" ]; then # Amend the config file
+
+    RC_FILE="        - ${RC_FILE}"
+    sed -i "/handsets:/{n;s/.*/$RC_FILE/}" /home/pi/ryde/config.yaml
+
+  fi
+}
+
+do_Set_RC_Type_2()
+{
+  RC_FILE="exit"
+
+  menuchoice=$(whiptail --title "Set Remote Control Model" --menu "Select Choice and press enter" 20 78 11 \
+    "11 Hauppauge 2" "Hauppauge USB PVR Ex-digilite" \
+    "12 TS-1 Sat" "Technosat TS-1 Satellite Receiver" \
+    "13 TS-3500" "Technosat TS-3500 Satellite Receiver" \
+    "14 F-2100 Uni" "Digi-Wav 2 Pound F2100 Universal Remote" \
+    "15 SF8008" "Octagon SF8008 Sat RX Remote" \
+    "16 Freesat V7" "Freesat V7 Combo - Some keys changed" \
+    "17 RTL-SDR" "RTL-SDR Basic Remote" \
+    "18 Avermedia" "AverMedia PC Card Tuner" \
+    "19 AEG DVD" "German AEG DVD Remote" \
+    "20 G-RCU-023" "German Remote from an Opticum HD AX150, labelled G-RCU-023" \
+    "99 Exit" "Exit without changing remote control model" \
+      3>&2 2>&1 1>&3)
+    case "$menuchoice" in
         11\ *) RC_FILE="hauppauge_usb" ;;
         12\ *) RC_FILE="ts1_sat" ;;
         13\ *) RC_FILE="ts3500_sat" ;;
@@ -90,7 +109,7 @@ do_Set_RC_Type()
         18\ *) RC_FILE="avermediacard" ;;
         19\ *) RC_FILE="aeg_dvd" ;;
         20\ *) RC_FILE="g_rcu_023" ;;
-        21\ *) RC_FILE="exit" ;;
+        99\ *) RC_FILE="exit" ;;
     esac
 
   if [ "$RC_FILE" != "exit" ]; then # Amend the config file
@@ -98,15 +117,49 @@ do_Set_RC_Type()
     RC_FILE="        - ${RC_FILE}"
     sed -i "/handsets:/{n;s/.*/$RC_FILE/}" /home/pi/ryde/config.yaml
 
-    # Load the requested file
-    #cp /home/pi/RydeHandsets/definitions/"$RC_FILE" /home/pi/ryde/handset.yaml
-
-    # Set the requested protocol setting
-    #sudo ir-keytable -p $PROTOCOL >/dev/null 2>/dev/null
-
-    # And change it for the future
-    #sed -i "/ir-keytable/c\sudo ir-keytable -p $PROTOCOL >/dev/null 2>/dev/null" /home/pi/ryde-build/rx.sh
   fi
+}
+
+do_Set_RC_Type_3()
+{
+  RC_FILE="exit"
+
+  menuchoice=$(whiptail --title "Set Remote Control Model" --menu "Select Choice and press enter" 20 78 11 \
+    "21 Pheonix" "Pheonix Satellite RX Remote" \
+    "22 Classic" "Classic remote marked IRC83079" \
+    "23 Tesco TV" "Tesco 18.5 inch TV Model LCD 19-229" \
+    "24 LED TV" "Anonymous LED TV" \
+    "99 Exit" "Exit without changing remote control model" \
+      3>&2 2>&1 1>&3)
+    case "$menuchoice" in
+        21\ *) RC_FILE="pheonix" ;;
+        22\ *) RC_FILE="classic" ;;
+        23\ *) RC_FILE="tesco_tv" ;;
+        24\ *) RC_FILE="led_tv" ;;
+        99\ *) RC_FILE="exit" ;;
+    esac
+
+  if [ "$RC_FILE" != "exit" ]; then # Amend the config file
+
+    RC_FILE="        - ${RC_FILE}"
+    sed -i "/handsets:/{n;s/.*/$RC_FILE/}" /home/pi/ryde/config.yaml
+
+  fi
+}
+
+
+do_Set_RC_Type()
+{
+  menuchoice=$(whiptail --title "Select Page 1, 2 or 3" --menu "Select Choice (key on BATC Wiki)" 20 78 5 \
+    "1  1 - 10" "Virgin, Nebula, LG, Samsung"  \
+    "2 11 - 20" "Various Sat Receivers" \
+    "3 21 - 30" "Odds and Ends" \
+      3>&2 2>&1 1>&3)
+    case "$menuchoice" in
+      1\ *) do_Set_RC_Type_1 ;;
+      2\ *) do_Set_RC_Type_2 ;;
+      3\ *) do_Set_RC_Type_3 ;;
+    esac
 }
 
 do_Set_Freq()
@@ -675,7 +728,7 @@ do_Set_Preset_Band()
   esac
 
   NEW_BAND=$(whiptail --title "Select the new $AMEND_PRESET preset band" --radiolist \
-    "Select Choice" 20 78 10 \
+    "Highlight choice, select with space bar and then press enter" 20 78 10 \
     "QO-100" "QO-100 Band" $Radio1 \
     "146" "146 MHz Band" $Radio2 \
     "437" "437 MHz Band" $Radio3 \
@@ -888,7 +941,7 @@ do_Debug_Menu()
     ;;
   esac
   DEBUG_MENU=$(whiptail --title "Select Whether the Debug Menu is Displayed" --radiolist \
-    "Select Choice" 20 78 5 \
+    "Highlight choice, select with space bar and then press enter" 20 78 5 \
     "False" "Debug Menu Not Displayed" $Radio1 \
     "True" "Debug Menu Displayed" $Radio2 \
     3>&2 2>&1 1>&3)
@@ -918,7 +971,7 @@ do_Power_Button()
     ;;
   esac
   POWER_BUTTON=$(whiptail --title "Select Action on Power Button Double Press" --radiolist \
-    "Select Choice" 20 78 5 \
+    "Highlight choice, select with space bar and then press enter" 20 78 5 \
     "APPSTOP" "Ryde Application Stops, RPi keeps Running" $Radio1 \
     "APPREST" "Ryde Application Restarts" $Radio2 \
     3>&2 2>&1 1>&3)
@@ -941,7 +994,7 @@ do_SD_Button()
     Radio2=ON
   fi
   SD_BUTTON=$(whiptail --title "Select Hardware Shutdown Function" --radiolist \
-    "Select Choice" 20 78 5 \
+    "Highlight choice, select with space bar and then press enter" 20 78 5 \
     "SHUTDOWN" "RPi Immediately Shuts Down" $Radio1 \
     "DO NOTHING" "Nothing happens" $Radio2 \
     3>&2 2>&1 1>&3)
@@ -959,12 +1012,12 @@ do_SD_Button()
 
 do_Settings()
 {
-  menuchoice=$(whiptail --title "Advanced Settings Menu" --menu "Select Choice" 16 78 10 \
+  menuchoice=$(whiptail --title "Advanced Settings Menu" --menu "Select Choice and press enter" 16 78 6 \
     "1 Tuner Timeout" "Adjust the Tuner Reset Time when no valid TS " \
     "2 Restore Factory" "Reset all settings to default" \
     "3 Debug Menu" "Enable or Disable the Debug Menu" \
     "4 Power Button" "Set behaviour on double press of power button" \
-    "5 Hardware Shutdown" "Enable or disable hardware shudown function" \
+    "5 Hardware Shutdown" "Enable or disable hardware shutdown function" \
       3>&2 2>&1 1>&3)
     case "$menuchoice" in
       1\ *) do_Set_TSTimeout ;;
@@ -978,7 +1031,7 @@ do_Settings()
 
 do_Set_Bands()
 {
-  menuchoice=$(whiptail --title "Select band for Amendment" --menu "Select Choice" 16 78 10 \
+  menuchoice=$(whiptail --title "Select band for Amendment" --menu "Select Choice and then press enter" 20 78 10 \
     "1 QO-100" "Set the LNB Offset frequency for QO-100" \
     "2 146" "Amend details for the 146 MHz Band" \
     "3 437" "Amend details for the 437 MHz Band" \
@@ -1007,6 +1060,9 @@ do_Set_Bands()
       LO_FREQ=$(whiptail --inputbox "Enter the new QO-100 LO frequency in kHz (for example 9750000)" 8 78 $LO_FREQ --title "LO Frequency Entry Menu" 3>&1 1>&2 2>&3)
       if [ $? -eq 0 ]; then
         sed -i "/    QO-100:/!b;n;c\        lofreq: $LO_FREQ" /home/pi/ryde/config.yaml
+        if [ "$LO_FREQ" == "0" ]; then  # set LO Side to SUM
+          sed -i "/    QO-100:/!b;n;n;c\        loside: SUM" /home/pi/ryde/config.yaml
+        fi
       fi
 
       # Read and trim the LO side
@@ -1015,6 +1071,7 @@ do_Set_Bands()
       if [ "$LO_FREQ" != "0" ]; then  # Set LO side
         Radio1=OFF
         Radio2=OFF
+        Radio3=OFF
         case "$LO_SIDE" in
           "LOW")
             Radio1=ON
@@ -1022,14 +1079,18 @@ do_Set_Bands()
           "HIGH")
             Radio2=ON
           ;;
+          "SUM")
+            Radio3=ON
+          ;;
           *)
             Radio1=ON
           ;;
         esac
-        LO_SIDE=$(whiptail --title "Select the LO Side for the QO-100 Band" --radiolist \
-          "Select Choice" 20 78 5 \
-          "LOW" "LO frequency below signal frequency (normal for QO-100)" $Radio1 \
-          "HIGH" "LO frequency above signal frequency" $Radio2 \
+        LO_SIDE=$(whiptail --title "Select the LO Configuration for the QO-100 Band" --radiolist \
+          "Highlight choice, select with space bar and then press enter" 20 78 5 \
+          "LOW" "Tuner Frequency = Signal Frequency - LO Frequency (normal)" $Radio1 \
+          "HIGH" "Tuner Frequency = LO Frequency - Signal Frequency" $Radio2 \
+          "SUM" "Tuner Frequency = LO Frequency + Signal Frequency" $Radio3 \
           3>&2 2>&1 1>&3)
         if [ $? -eq 0 ]; then
           sed -i "/    QO-100:/!b;n;n;c\        loside: $LO_SIDE" /home/pi/ryde/config.yaml
@@ -1057,7 +1118,7 @@ do_Set_Bands()
         ;;
       esac
       NEW_POL=$(whiptail --title "Select the new QO-100 Polarity" --radiolist \
-        "Select Choice" 20 78 5 \
+        "Highlight choice, select with space bar and then press enter" 20 78 5 \
         "NONE" "No LNB Voltage" $Radio1 \
         "VERTICAL" "Vertical Polarity 13 Volts" $Radio2 \
         "HORIZONTAL" "Horizontal Polarity 18 Volts (QO-100)" $Radio3 \
@@ -1083,7 +1144,7 @@ do_Set_Bands()
         ;;
       esac
       NEW_PORT=$(whiptail --title "Select the new QO-100 Port" --radiolist \
-        "Select Choice" 20 78 5 \
+        "Highlight choice, select with space bar and then press enter" 20 78 5 \
         "TOP" "Top LNB Port    (Socket A)" $Radio1 \
         "BOTTOM" "Bottom LNB Port (Socket B)" $Radio2 \
         3>&2 2>&1 1>&3)
@@ -1107,6 +1168,9 @@ do_Set_Bands()
       LO_FREQ=$(whiptail --inputbox "Enter the new 146 MHz Band LO frequency in kHz (for example 9750000)" 8 78 $LO_FREQ --title "LO Frequency Entry Menu" 3>&1 1>&2 2>&3)
       if [ $? -eq 0 ]; then
         sed -i "/    146:/!b;n;c\        lofreq: $LO_FREQ" /home/pi/ryde/config.yaml
+        if [ "$LO_FREQ" == "0" ]; then  # set LO Side to SUM
+          sed -i "/    146:/!b;n;n;c\        loside: SUM" /home/pi/ryde/config.yaml
+        fi
       fi
 
       # Read and trim the LO side
@@ -1115,6 +1179,7 @@ do_Set_Bands()
       if [ "$LO_FREQ" != "0" ]; then  # Set LO side
         Radio1=OFF
         Radio2=OFF
+        Radio3=OFF
         case "$LO_SIDE" in
           "LOW")
             Radio1=ON
@@ -1122,14 +1187,18 @@ do_Set_Bands()
           "HIGH")
             Radio2=ON
           ;;
+          "SUM")
+            Radio3=ON
+          ;;
           *)
             Radio1=ON
           ;;
         esac
-        LO_SIDE=$(whiptail --title "Select the LO Side for the 146 MHz Band" --radiolist \
-          "Select Choice" 20 78 5 \
-          "LOW" "LO frequency below signal frequency (normal for 146)" $Radio1 \
-          "HIGH" "LO frequency above signal frequency" $Radio2 \
+        LO_SIDE=$(whiptail --title "Select the LO Configuration for the 146 MHz Band" --radiolist \
+          "Highlight choice, select with space bar and then press enter" 20 78 5 \
+          "LOW" "Tuner Frequency = Signal Frequency - LO Frequency" $Radio1 \
+          "HIGH" "Tuner Frequency = LO Frequency - Signal Frequency" $Radio2 \
+          "SUM" "Tuner Frequency = LO Frequency + Signal Frequency" $Radio3 \
           3>&2 2>&1 1>&3)
         if [ $? -eq 0 ]; then
           sed -i "/    146:/!b;n;n;c\        loside: $LO_SIDE" /home/pi/ryde/config.yaml
@@ -1157,7 +1226,7 @@ do_Set_Bands()
         ;;
       esac
       NEW_POL=$(whiptail --title "Select the new 146 MHz Band Polarity" --radiolist \
-        "Select Choice" 20 78 5 \
+        "Highlight choice, select with space bar and then press enter" 20 78 5 \
         "NONE" "No LNB Voltage" $Radio1 \
         "VERTICAL" "Vertical Polarity 13 Volts" $Radio2 \
         "HORIZONTAL" "Horizontal Polarity 18 Volts" $Radio3 \
@@ -1183,7 +1252,7 @@ do_Set_Bands()
         ;;
       esac
       NEW_PORT=$(whiptail --title "Select the new 146 MHz Band Port" --radiolist \
-        "Select Choice" 20 78 5 \
+        "Highlight choice, select with space bar and then press enter" 20 78 5 \
         "TOP" "Top LNB Port    (Socket A)" $Radio1 \
         "BOTTOM" "Bottom LNB Port (Socket B)" $Radio2 \
         3>&2 2>&1 1>&3)
@@ -1207,6 +1276,9 @@ do_Set_Bands()
       LO_FREQ=$(whiptail --inputbox "Enter the new 437 MHz Band LO frequency in kHz (for example 9750000)" 8 78 $LO_FREQ --title "LO Frequency Entry Menu" 3>&1 1>&2 2>&3)
       if [ $? -eq 0 ]; then
         sed -i "/    437:/!b;n;c\        lofreq: $LO_FREQ" /home/pi/ryde/config.yaml
+        if [ "$LO_FREQ" == "0" ]; then  # set LO Side to SUM
+          sed -i "/    437:/!b;n;n;c\        loside: SUM" /home/pi/ryde/config.yaml
+        fi
       fi
 
       # Read and trim the LO side
@@ -1215,6 +1287,7 @@ do_Set_Bands()
       if [ "$LO_FREQ" != "0" ]; then  # Set LO side
         Radio1=OFF
         Radio2=OFF
+        Radio3=OFF
         case "$LO_SIDE" in
           "LOW")
             Radio1=ON
@@ -1222,14 +1295,18 @@ do_Set_Bands()
           "HIGH")
             Radio2=ON
           ;;
+          "SUM")
+            Radio3=ON
+          ;;
           *)
             Radio1=ON
           ;;
         esac
-        LO_SIDE=$(whiptail --title "Select the LO Side for the 437 MHz Band" --radiolist \
-          "Select Choice" 20 78 5 \
-          "LOW" "LO frequency below signal frequency (normal for 437)" $Radio1 \
-          "HIGH" "LO frequency above signal frequency" $Radio2 \
+        LO_SIDE=$(whiptail --title "Select the LO Configuration for the 437 MHz Band" --radiolist \
+          "Highlight choice, select with space bar and then press enter" 20 78 5 \
+          "LOW" "Tuner Frequency = Signal Frequency - LO Frequency" $Radio1 \
+          "HIGH" "Tuner Frequency = LO Frequency - Signal Frequency" $Radio2 \
+          "SUM" "Tuner Frequency = LO Frequency + Signal Frequency" $Radio3 \
           3>&2 2>&1 1>&3)
         if [ $? -eq 0 ]; then
           sed -i "/    437:/!b;n;n;c\        loside: $LO_SIDE" /home/pi/ryde/config.yaml
@@ -1257,7 +1334,7 @@ do_Set_Bands()
         ;;
       esac
       NEW_POL=$(whiptail --title "Select the new 437 MHz Band Polarity" --radiolist \
-        "Select Choice" 20 78 5 \
+        "Highlight choice, select with space bar and then press enter" 20 78 5 \
         "NONE" "No LNB Voltage" $Radio1 \
         "VERTICAL" "Vertical Polarity 13 Volts" $Radio2 \
         "HORIZONTAL" "Horizontal Polarity 18 Volts" $Radio3 \
@@ -1283,7 +1360,7 @@ do_Set_Bands()
         ;;
       esac
       NEW_PORT=$(whiptail --title "Select the new 437 MHz Band Port" --radiolist \
-        "Select Choice" 20 78 5 \
+        "Highlight choice, select with space bar and then press enter" 20 78 5 \
         "TOP" "Top LNB Port    (Socket A)" $Radio1 \
         "BOTTOM" "Bottom LNB Port (Socket B)" $Radio2 \
         3>&2 2>&1 1>&3)
@@ -1307,6 +1384,9 @@ do_Set_Bands()
       LO_FREQ=$(whiptail --inputbox "Enter the new 1255 MHz Band LO frequency in kHz (for example 9750000)" 8 78 $LO_FREQ --title "LO Frequency Entry Menu" 3>&1 1>&2 2>&3)
       if [ $? -eq 0 ]; then
         sed -i "/    1255:/!b;n;c\        lofreq: $LO_FREQ" /home/pi/ryde/config.yaml
+        if [ "$LO_FREQ" == "0" ]; then  # set LO Side to SUM
+          sed -i "/    1255:/!b;n;n;c\        loside: SUM" /home/pi/ryde/config.yaml
+        fi
       fi
 
       # Read and trim the LO side
@@ -1315,6 +1395,7 @@ do_Set_Bands()
       if [ "$LO_FREQ" != "0" ]; then  # Set LO side
         Radio1=OFF
         Radio2=OFF
+        Radio3=OFF
         case "$LO_SIDE" in
           "LOW")
             Radio1=ON
@@ -1322,14 +1403,18 @@ do_Set_Bands()
           "HIGH")
             Radio2=ON
           ;;
+          "SUM")
+            Radio3=ON
+          ;;
           *)
             Radio1=ON
           ;;
         esac
-        LO_SIDE=$(whiptail --title "Select the LO Side for the 1255 MHz Band" --radiolist \
-          "Select Choice" 20 78 5 \
-          "LOW" "LO frequency below signal frequency (normal for 1255)" $Radio1 \
-          "HIGH" "LO frequency above signal frequency" $Radio2 \
+        LO_SIDE=$(whiptail --title "Select the LO Configuration for the 1255 MHz Band" --radiolist \
+          "Highlight choice, select with space bar and then press enter" 20 78 5 \
+          "LOW" "Tuner Frequency = Signal Frequency - LO Frequency" $Radio1 \
+          "HIGH" "Tuner Frequency = LO Frequency - Signal Frequency" $Radio2 \
+          "SUM" "Tuner Frequency = LO Frequency + Signal Frequency" $Radio3 \
           3>&2 2>&1 1>&3)
         if [ $? -eq 0 ]; then
           sed -i "/    1255:/!b;n;n;c\        loside: $LO_SIDE" /home/pi/ryde/config.yaml
@@ -1357,7 +1442,7 @@ do_Set_Bands()
         ;;
       esac
       NEW_POL=$(whiptail --title "Select the new 1255 MHz Band Polarity" --radiolist \
-        "Select Choice" 20 78 5 \
+        "Highlight choice, select with space bar and then press enter" 20 78 5 \
         "NONE" "No LNB Voltage" $Radio1 \
         "VERTICAL" "Vertical Polarity 13 Volts" $Radio2 \
         "HORIZONTAL" "Horizontal Polarity 18 Volts" $Radio3 \
@@ -1383,7 +1468,7 @@ do_Set_Bands()
         ;;
       esac
       NEW_PORT=$(whiptail --title "Select the new 1255 MHz Band Port" --radiolist \
-        "Select Choice" 20 78 5 \
+        "Highlight choice, select with space bar and then press enter" 20 78 5 \
         "TOP" "Top LNB Port    (Socket A)" $Radio1 \
         "BOTTOM" "Bottom LNB Port (Socket B)" $Radio2 \
         3>&2 2>&1 1>&3)
@@ -1407,6 +1492,9 @@ do_Set_Bands()
       LO_FREQ=$(whiptail --inputbox "Enter the new 2400 MHz Band LO frequency in kHz (for example 9750000)" 8 78 $LO_FREQ --title "LO Frequency Entry Menu" 3>&1 1>&2 2>&3)
       if [ $? -eq 0 ]; then
         sed -i "/    2400:/!b;n;c\        lofreq: $LO_FREQ" /home/pi/ryde/config.yaml
+        if [ "$LO_FREQ" == "0" ]; then  # set LO Side to SUM
+          sed -i "/    2400:/!b;n;n;c\        loside: SUM" /home/pi/ryde/config.yaml
+        fi
       fi
 
       # Read and trim the LO side
@@ -1415,6 +1503,7 @@ do_Set_Bands()
       if [ "$LO_FREQ" != "0" ]; then  # Set LO side
         Radio1=OFF
         Radio2=OFF
+        Radio3=OFF
         case "$LO_SIDE" in
           "LOW")
             Radio1=ON
@@ -1422,14 +1511,18 @@ do_Set_Bands()
           "HIGH")
             Radio2=ON
           ;;
+          "SUM")
+            Radio3=ON
+          ;;
           *)
             Radio1=ON
           ;;
         esac
-        LO_SIDE=$(whiptail --title "Select the LO Side for the 2400 MHz Band" --radiolist \
-          "Select Choice" 20 78 5 \
-          "LOW" "LO frequency below signal frequency (normal for 2400)" $Radio1 \
-          "HIGH" "LO frequency above signal frequency" $Radio2 \
+        LO_SIDE=$(whiptail --title "Select the LO Configuration for the 2400 MHz Band" --radiolist \
+          "Highlight choice, select with space bar and then press enter" 20 78 5 \
+          "LOW" "Tuner Frequency = Signal Frequency - LO Frequency" $Radio1 \
+          "HIGH" "Tuner Frequency = LO Frequency - Signal Frequency" $Radio2 \
+          "SUM" "Tuner Frequency = LO Frequency + Signal Frequency" $Radio3 \
           3>&2 2>&1 1>&3)
         if [ $? -eq 0 ]; then
           sed -i "/    2400:/!b;n;n;c\        loside: $LO_SIDE" /home/pi/ryde/config.yaml
@@ -1457,7 +1550,7 @@ do_Set_Bands()
         ;;
       esac
       NEW_POL=$(whiptail --title "Select the new 2400 MHz Band Polarity" --radiolist \
-        "Select Choice" 20 78 5 \
+        "Highlight choice, select with space bar and then press enter" 20 78 5 \
         "NONE" "No LNB Voltage" $Radio1 \
         "VERTICAL" "Vertical Polarity 13 Volts" $Radio2 \
         "HORIZONTAL" "Horizontal Polarity 18 Volts" $Radio3 \
@@ -1483,7 +1576,7 @@ do_Set_Bands()
         ;;
       esac
       NEW_PORT=$(whiptail --title "Select the new 2400 MHz Band Port" --radiolist \
-        "Select Choice" 20 78 5 \
+        "Highlight choice, select with space bar and then press enter" 20 78 5 \
         "TOP" "Top LNB Port    (Socket A)" $Radio1 \
         "BOTTOM" "Bottom LNB Port (Socket B)" $Radio2 \
         3>&2 2>&1 1>&3)
@@ -1507,6 +1600,9 @@ do_Set_Bands()
       LO_FREQ=$(whiptail --inputbox "Enter the new 3400 MHz Band LO frequency in kHz (for example 9750000)" 8 78 $LO_FREQ --title "LO Frequency Entry Menu" 3>&1 1>&2 2>&3)
       if [ $? -eq 0 ]; then
         sed -i "/    3400:/!b;n;c\        lofreq: $LO_FREQ" /home/pi/ryde/config.yaml
+        if [ "$LO_FREQ" == "0" ]; then  # set LO Side to SUM
+          sed -i "/    3400:/!b;n;n;c\        loside: SUM" /home/pi/ryde/config.yaml
+        fi
       fi
 
       # Read and trim the LO side
@@ -1515,6 +1611,7 @@ do_Set_Bands()
       if [ "$LO_FREQ" != "0" ]; then  # Set LO side
         Radio1=OFF
         Radio2=OFF
+        Radio3=OFF
         case "$LO_SIDE" in
           "LOW")
             Radio1=ON
@@ -1522,14 +1619,18 @@ do_Set_Bands()
           "HIGH")
             Radio2=ON
           ;;
+          "SUM")
+            Radio3=ON
+          ;;
           *)
             Radio1=ON
           ;;
         esac
-        LO_SIDE=$(whiptail --title "Select the LO Side for the 3400 MHz Band" --radiolist \
-          "Select Choice" 20 78 5 \
-          "LOW" "LO frequency below signal frequency (normal for 3400)" $Radio1 \
-          "HIGH" "LO frequency above signal frequency" $Radio2 \
+        LO_SIDE=$(whiptail --title "Select the LO Configuration for the 3400 MHz Band" --radiolist \
+          "Highlight choice, select with space bar and then press enter" 20 78 5 \
+          "LOW" "Tuner Frequency = Signal Frequency - LO Frequency" $Radio1 \
+          "HIGH" "Tuner Frequency = LO Frequency - Signal Frequency (normal)" $Radio2 \
+          "SUM" "Tuner Frequency = LO Frequency + Signal Frequency" $Radio3 \
           3>&2 2>&1 1>&3)
         if [ $? -eq 0 ]; then
           sed -i "/    3400:/!b;n;n;c\        loside: $LO_SIDE" /home/pi/ryde/config.yaml
@@ -1557,7 +1658,7 @@ do_Set_Bands()
         ;;
       esac
       NEW_POL=$(whiptail --title "Select the new 3400 MHz Band Polarity" --radiolist \
-        "Select Choice" 20 78 5 \
+        "Highlight choice, select with space bar and then press enter" 20 78 5 \
         "NONE" "No LNB Voltage" $Radio1 \
         "VERTICAL" "Vertical Polarity 13 Volts" $Radio2 \
         "HORIZONTAL" "Horizontal Polarity 18 Volts" $Radio3 \
@@ -1583,7 +1684,7 @@ do_Set_Bands()
         ;;
       esac
       NEW_PORT=$(whiptail --title "Select the new 3400 MHz Band Port" --radiolist \
-        "Select Choice" 20 78 5 \
+        "Highlight choice, select with space bar and then press enter" 20 78 5 \
         "TOP" "Top LNB Port    (Socket A)" $Radio1 \
         "BOTTOM" "Bottom LNB Port (Socket B)" $Radio2 \
         3>&2 2>&1 1>&3)
@@ -1607,6 +1708,9 @@ do_Set_Bands()
       LO_FREQ=$(whiptail --inputbox "Enter the new 5760 MHz Band LO frequency in kHz (for example 9750000)" 8 78 $LO_FREQ --title "LO Frequency Entry Menu" 3>&1 1>&2 2>&3)
       if [ $? -eq 0 ]; then
         sed -i "/    5760:/!b;n;c\        lofreq: $LO_FREQ" /home/pi/ryde/config.yaml
+        if [ "$LO_FREQ" == "0" ]; then  # set LO Side to SUM
+          sed -i "/    5760:/!b;n;n;c\        loside: SUM" /home/pi/ryde/config.yaml
+        fi
       fi
 
       # Read and trim the LO side
@@ -1615,6 +1719,7 @@ do_Set_Bands()
       if [ "$LO_FREQ" != "0" ]; then  # Set LO side
         Radio1=OFF
         Radio2=OFF
+        Radio3=OFF
         case "$LO_SIDE" in
           "LOW")
             Radio1=ON
@@ -1622,14 +1727,18 @@ do_Set_Bands()
           "HIGH")
             Radio2=ON
           ;;
+          "SUM")
+            Radio3=ON
+          ;;
           *)
             Radio1=ON
           ;;
         esac
-        LO_SIDE=$(whiptail --title "Select the LO Side for the 5760 MHz Band" --radiolist \
-          "Select Choice" 20 78 5 \
-          "LOW" "LO frequency below signal frequency (normal for 5760)" $Radio1 \
-          "HIGH" "LO frequency above signal frequency" $Radio2 \
+        LO_SIDE=$(whiptail --title "Select the LO Configuration for the 5760 MHz Band" --radiolist \
+          "Highlight choice, select with space bar and then press enter" 20 78 5 \
+          "LOW" "Tuner Frequency = Signal Frequency - LO Frequency (normal)" $Radio1 \
+          "HIGH" "Tuner Frequency = LO Frequency - Signal Frequency" $Radio2 \
+          "SUM" "Tuner Frequency = LO Frequency + Signal Frequency" $Radio3 \
           3>&2 2>&1 1>&3)
         if [ $? -eq 0 ]; then
           sed -i "/    5760:/!b;n;n;c\        loside: $LO_SIDE" /home/pi/ryde/config.yaml
@@ -1657,7 +1766,7 @@ do_Set_Bands()
         ;;
       esac
       NEW_POL=$(whiptail --title "Select the new 5760 MHz Band Polarity" --radiolist \
-        "Select Choice" 20 78 5 \
+        "Highlight choice, select with space bar and then press enter" 20 78 5 \
         "NONE" "No LNB Voltage" $Radio1 \
         "VERTICAL" "Vertical Polarity 13 Volts" $Radio2 \
         "HORIZONTAL" "Horizontal Polarity 18 Volts" $Radio3 \
@@ -1683,7 +1792,7 @@ do_Set_Bands()
         ;;
       esac
       NEW_PORT=$(whiptail --title "Select the new 5760 MHz Band Port" --radiolist \
-        "Select Choice" 20 78 5 \
+        "Highlight choice, select with space bar and then press enter" 20 78 5 \
         "TOP" "Top LNB Port    (Socket A)" $Radio1 \
         "BOTTOM" "Bottom LNB Port (Socket B)" $Radio2 \
         3>&2 2>&1 1>&3)
@@ -1707,6 +1816,9 @@ do_Set_Bands()
       LO_FREQ=$(whiptail --inputbox "Enter the new 10368 MHz Band LO frequency in kHz (for example 9750000)" 8 78 $LO_FREQ --title "LO Frequency Entry Menu" 3>&1 1>&2 2>&3)
       if [ $? -eq 0 ]; then
         sed -i "/    10368:/!b;n;c\        lofreq: $LO_FREQ" /home/pi/ryde/config.yaml
+        if [ "$LO_FREQ" == "0" ]; then  # set LO Side to SUM
+          sed -i "/    10368:/!b;n;n;c\        loside: SUM" /home/pi/ryde/config.yaml
+        fi
       fi
 
       # Read and trim the LO side
@@ -1715,6 +1827,7 @@ do_Set_Bands()
       if [ "$LO_FREQ" != "0" ]; then  # Set LO side
         Radio1=OFF
         Radio2=OFF
+        Radio3=OFF
         case "$LO_SIDE" in
           "LOW")
             Radio1=ON
@@ -1722,14 +1835,18 @@ do_Set_Bands()
           "HIGH")
             Radio2=ON
           ;;
+          "SUM")
+            Radio3=ON
+          ;;
           *)
             Radio1=ON
           ;;
         esac
-        LO_SIDE=$(whiptail --title "Select the LO Side for the 10368 MHz Band" --radiolist \
-          "Select Choice" 20 78 5 \
-          "LOW" "LO frequency below signal frequency (normal for 10368)" $Radio1 \
-          "HIGH" "LO frequency above signal frequency" $Radio2 \
+        LO_SIDE=$(whiptail --title "Select the LO Configuration for the 10368 MHz Band" --radiolist \
+          "Highlight choice, select with space bar and then press enter" 20 78 5 \
+          "LOW" "Tuner Frequency = Signal Frequency - LO Frequency (normal)" $Radio1 \
+          "HIGH" "Tuner Frequency = LO Frequency - Signal Frequency" $Radio2 \
+          "SUM" "Tuner Frequency = LO Frequency + Signal Frequency" $Radio3 \
           3>&2 2>&1 1>&3)
         if [ $? -eq 0 ]; then
           sed -i "/    10368:/!b;n;n;c\        loside: $LO_SIDE" /home/pi/ryde/config.yaml
@@ -1757,7 +1874,7 @@ do_Set_Bands()
         ;;
       esac
       NEW_POL=$(whiptail --title "Select the new 10368 MHz Band Polarity" --radiolist \
-        "Select Choice" 20 78 5 \
+        "Highlight choice, select with space bar and then press enter" 20 78 5 \
         "NONE" "No LNB Voltage" $Radio1 \
         "VERTICAL" "Vertical Polarity 13 Volts" $Radio2 \
         "HORIZONTAL" "Horizontal Polarity 18 Volts" $Radio3 \
@@ -1783,7 +1900,7 @@ do_Set_Bands()
         ;;
       esac
       NEW_PORT=$(whiptail --title "Select the new 10368 MHz Band Port" --radiolist \
-        "Select Choice" 20 78 5 \
+        "Highlight choice, select with space bar and then press enter" 20 78 5 \
         "TOP" "Top LNB Port    (Socket A)" $Radio1 \
         "BOTTOM" "Bottom LNB Port (Socket B)" $Radio2 \
         3>&2 2>&1 1>&3)
@@ -1859,7 +1976,7 @@ do_Set_Defaults()
   esac
   
   NEW_DEFAULT_PRESET=$(whiptail --title "Select the new Default Preset" --radiolist \
-    "Select Choice" 20 78 12 \
+    "Highlight choice, select with space bar and then press enter" 20 78 12 \
     "QO-100_Beacon" "The QO-100_Beacon preset" $Radio1 \
     "QO-100_9.25_333" "The QO-100_9.25_333 preset" $Radio2 \
     "QO-100_Custom" "The QO-100_Custom preset" $Radio3 \
@@ -2099,7 +2216,7 @@ do_Comp_Vid_NTSC()
 
 do_video_change()
 {
-  menuchoice=$(whiptail --title "Video Output Menu" --menu "Select Choice" 16 78 10 \
+  menuchoice=$(whiptail --title "Video Output Menu" --menu "Select Choice" 16 78 5 \
     "1 Normal HDMI" "Recommended Mode"  \
     "2 HDMI Safe Mode" "Use for HDMI Troubleshooting" \
     "3 PAL Composite Video" "Use the RPi Video Output Jack" \
@@ -2137,10 +2254,10 @@ do_Exit()
 
 do_shutdown_menu()
 {
-  menuchoice=$(whiptail --title "Shutdown Menu" --menu "Select Choice" 16 78 10 \
+  menuchoice=$(whiptail --title "Shutdown Menu" --menu "Select Choice and press enter" 16 78 4 \
     "1 Shutdown now" "Immediate Shutdown"  \
-    "2 Reboot now" "Immediate reboot" \
-    "3 Exit to Linux" "Exit menu to Command Prompt" \
+    "2 Reboot now" "Immediate Reboot" \
+    "3 Exit to Linux" "Exit Menu to Command Prompt" \
       3>&2 2>&1 1>&3)
     case "$menuchoice" in
       1\ *) do_Shutdown ;;
@@ -2185,7 +2302,7 @@ while [ "$status" -eq 0 ]
   do
     # Display main menu
 
-    menuchoice=$(whiptail --title "BATC Ryde Receiver Main Menu" --menu "INFO" 18 78 12 \
+    menuchoice=$(whiptail --title "BATC Ryde Receiver Main Menu" --menu "Select Choice and press enter:" 20 78 12 \
 	"0 Receive" "Start the Ryde Receiver" \
         "1 Stop" "Stop the Ryde Receiver" \
         "2 Start-up" "Set the start-up Preset" \
@@ -2195,9 +2312,9 @@ while [ "$status" -eq 0 ]
 	"6 Remote" "Select the Remote Control Type" \
 	"7 IR Check" "View the IR Codes From a new Remote" \
         "8 Settings" "Advanced Settings" \
-	"9 Info" "Display System Info" \
-	"10 Update" "Check for Update" \
-	"11 Shutdown" "Reboot or Shutdown" \
+	"9 Info" "Display System Information" \
+	"10 Update" "Check for Software Update" \
+	"11 Shutdown" "Shutdown, Reboot or exit to the Linux command prompt" \
  	3>&2 2>&1 1>&3)
 
         case "$menuchoice" in
@@ -2222,7 +2339,7 @@ while [ "$status" -eq 0 ]
         status=1
 
         # Sleep while user reads message, then exit
-        sleep 1
+        #sleep 1
       exit ;;
     esac
   done

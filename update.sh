@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Created by davecrump 20200714 for Ryde on Buster Raspios
-# Updated for version 202009070
+# Updated for version 202011160
 
 echo
 echo "----------------------------------------"
@@ -185,7 +185,7 @@ fi
 #echo "---------------------------------------------"
 #echo
 
-grep -q "REPORT" "$PATHUBACKUP"/config.yaml
+grep -q "loside: SUM" "$PATHUBACKUP"/config.yaml
 if [ $? == 0 ]; then # User's config file is latest version, so simply copy back
   cp -f -r "$PATHUBACKUP"/config.yaml /home/pi/ryde/config.yaml >/dev/null 2>/dev/null
 else # User's config file needs updating, so copy master and reset remote control
@@ -272,6 +272,22 @@ else # User's config file needs updating, so copy master and reset remote contro
   grep -q "g_rcu_023" "$PATHUBACKUP"/config.yaml
   if  [ $? == 0 ]; then   ## Amend new file for "g_rcu_023" 20
     sed -i "/handsets:/{n;s/.*/        - g_rcu_023/}" /home/pi/ryde/config.yaml
+  fi
+  grep -q "pheonix" "$PATHUBACKUP"/config.yaml
+  if  [ $? == 0 ]; then   ## Amend new file for "pheonix" 21
+    sed -i "/handsets:/{n;s/.*/        - pheonix/}" /home/pi/ryde/config.yaml
+  fi
+  grep -q "classic" "$PATHUBACKUP"/config.yaml
+  if  [ $? == 0 ]; then   ## Amend new file for "classic" 22
+    sed -i "/handsets:/{n;s/.*/        - classic/}" /home/pi/ryde/config.yaml
+  fi
+  grep -q "tesco_tv" "$PATHUBACKUP"/config.yaml
+  if  [ $? == 0 ]; then   ## Amend new file for "tesco_tv" 23
+    sed -i "/handsets:/{n;s/.*/        - tesco_tv/}" /home/pi/ryde/config.yaml
+  fi
+  grep -q "led_tv" "$PATHUBACKUP"/config.yaml
+  if  [ $? == 0 ]; then   ## Amend new file for "led_tv" 24
+    sed -i "/handsets:/{n;s/.*/        - led_tv/}" /home/pi/ryde/config.yaml
   fi
 fi
 
