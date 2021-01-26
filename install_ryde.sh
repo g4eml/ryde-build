@@ -79,6 +79,8 @@ sudo apt-get -y install python3-vlc
 sudo apt-get -y install python3-evdev
 sudo apt-get -y install python3-pil
 sudo apt-get -y install python3-gpiozero
+sudo apt-get -y install libfftw3-dev libjpeg-dev  # for DVB-T
+sudo apt-get -y install fbi netcat imagemagick    # for DVB-T
 
 # Install WiringPi for the hardware shutdown button
 echo
@@ -188,28 +190,42 @@ sudo bash -c 'echo -e "\n# Shorten dhcpcd timeout from 30 to 5 secs" >> /etc/dhc
 sudo bash -c 'echo -e "timeout 5\n" >> /etc/dhcpcd.conf'
 
 # Modify .bashrc for hardware shutdown, set RPi Jack audio volume and autostart
-echo  >> ~/.bashrc
-echo "# Autostart Ryde on Boot" >> ~/.bashrc
-echo if test -z \"\$SSH_CLIENT\" >> ~/.bashrc 
-echo then >> ~/.bashrc
+if grep -q Ryde /home/pi/.bashrc; then  # Second Install over a previous install
+  echo
+  echo "*********** Warning, you have installed Ryde before ************"
+  echo "****** Results are unpredictable after multiple installs *******"
+  echo "*********** Please build a new card and start again ************"
+  echo
+else  # First install
+  echo  >> ~/.bashrc
+  echo "# Autostart Ryde on Boot" >> ~/.bashrc
+  echo if test -z \"\$SSH_CLIENT\" >> ~/.bashrc 
+  echo then >> ~/.bashrc
+  echo "  # If pi-sdn is not running, check if it is required to run" >> ~/.bashrc
+  echo "  ps -cax | grep 'pi-sdn' >/dev/null 2>/dev/null" >> ~/.bashrc
+  echo "  RESULT=\"\$?\"" >> ~/.bashrc
+  echo "  if [ \"\$RESULT\" -ne 0 ]; then" >> ~/.bashrc
+  echo "    if [ -f /home/pi/.pi-sdn ]; then" >> ~/.bashrc
+  echo "      . /home/pi/.pi-sdn" >> ~/.bashrc
+  echo "    fi" >> ~/.bashrc
+  echo "  fi" >> ~/.bashrc
 
-echo "  # If pi-sdn is not running, check if it is required to run" >> ~/.bashrc
-echo "  ps -cax | grep 'pi-sdn' >/dev/null 2>/dev/null" >> ~/.bashrc
-echo "  RESULT=\"\$?\"" >> ~/.bashrc
-echo "  if [ \"\$RESULT\" -ne 0 ]; then" >> ~/.bashrc
-echo "    if [ -f /home/pi/.pi-sdn ]; then" >> ~/.bashrc
-echo "      . /home/pi/.pi-sdn" >> ~/.bashrc
-echo "    fi" >> ~/.bashrc
-echo "  fi" >> ~/.bashrc
+  echo "  # Set RPi Audio Jack volume" >> ~/.bashrc
+  echo "  amixer set Headphone 0db >/dev/null 2>/dev/null" >> ~/.bashrc
+  echo  >> ~/.bashrc
 
-echo "  # Set RPi Audio Jack volume" >> ~/.bashrc
-echo "  amixer set Headphone 0db >/dev/null 2>/dev/null" >> ~/.bashrc
-echo  >> ~/.bashrc
+  echo "  # Start Ryde" >> ~/.bashrc
+  echo "  /home/pi/ryde-build/rx.sh" >> ~/.bashrc
+  echo fi >> ~/.bashrc
+  echo  >> ~/.bashrc
+fi
 
-echo "  # Start Ryde" >> ~/.bashrc
-echo "  /home/pi/ryde-build/rx.sh" >> ~/.bashrc
-echo fi >> ~/.bashrc
-echo  >> ~/.bashrc
+# Amend /etc/fstab to create a tmpfs drive at ~/tmp for multiple writes (202101190)
+if grep -q /home/pi/tmp /etc/fstab; then
+  echo "tmpfs already requested"
+else
+  sudo sed -i '4itmpfs           /home/pi/tmp    tmpfs   defaults,noatime,nosuid,size=10m  0  0' /etc/fstab
+fi
 
 echo
 echo "-----------------------------------------"
@@ -222,6 +238,19 @@ cd /home/pi/ryde-build/pi-sdn-build
 make
 mv pi-sdn /home/pi/
 cd /home/pi
+
+echo
+echo "-----------------------------------------"
+echo "----- Building the Interim DVB-T RX -----"
+echo "-----------------------------------------"
+echo
+
+sudo rm -rf /home/pi/dvbt/ >/dev/null 2>/dev/null
+cp -r /home/pi/ryde-build/configs/dvbt /home/pi/dvbt
+cd /home/pi/dvbt
+make
+cd /home/pi
+
 
 echo
 echo "--------------------------------------"

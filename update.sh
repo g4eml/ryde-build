@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Created by davecrump 20200714 for Ryde on Buster Raspios
-# Updated for version 202012250
+# Updated for version 202101260
 
 echo
 echo "----------------------------------------"
@@ -58,6 +58,9 @@ cp -f -r /home/pi/ryde/config.yaml "$PATHUBACKUP"/config.yaml >/dev/null 2>/dev/
 # And capture the RC protocol in the rx.sh file:
 cp -f -r /home/pi/ryde-build/rx.sh "$PATHUBACKUP"/rx.sh
 
+# And the dvb-t config
+cp -f -r /home/pi/dvbt/dvb-t_config.txt "$PATHUBACKUP"/dvb-t_config.txt >/dev/null 2>/dev/null
+
 echo
 echo "-------------------------------------------------"
 echo "----- Updating the System Software Packages -----"
@@ -75,6 +78,16 @@ sudo apt-get -y dist-upgrade # Upgrade all the installed packages to their lates
 # --------- Install new packages as Required ---------
 
 sudo apt-get -y install python3-gpiozero  # for GPIOs
+sudo apt-get -y install libfftw3-dev libjpeg-dev  # for DVB-T
+sudo apt-get -y install fbi netcat imagemagick    # for DVB-T
+
+if [ ! -f "/usr/lib/libwiringPi.so" ]; then       # Need to install WiringPi
+  echo "Installing WiringPi"
+  cd /tmp
+  wget https://project-downloads.drogon.net/wiringpi-latest.deb
+  sudo dpkg -i wiringpi-latest.deb
+  cd /home/pi
+fi
 
 # --------- Overwrite and compile all the software components -----
 
@@ -179,13 +192,31 @@ else  ## "#gpu_mem=128" is there, so amend it to read "gpu_mem=128"
   sudo sed -i 's/^#gpu_mem=128/gpu_mem=128/' /boot/config.txt 
 fi
 
-#echo
-#echo "---------------------------------------------"
-#echo "----- Restoring the User's Config Files -----"
-#echo "---------------------------------------------"
-#echo
+# Amend /etc/fstab to create a tmpfs drive at ~/tmp for multiple writes (202101190)
+if grep -q /home/pi/tmp /etc/fstab; then
+  echo "tmpfs already requested"
+else
+  sudo sed -i '4itmpfs           /home/pi/tmp    tmpfs   defaults,noatime,nosuid,size=10m  0  0' /etc/fstab
+fi
 
-grep -q "FREQ: null" "$PATHUBACKUP"/config.yaml
+echo
+echo "-------------------------------------------"
+echo "----- Rebuilding the Interim DVB-T RX -----"
+echo "-------------------------------------------"
+
+sudo rm -rf /home/pi/dvbt/ >/dev/null 2>/dev/null
+cp -r /home/pi/ryde-build/configs/dvbt /home/pi/dvbt
+cd /home/pi/dvbt
+make
+cd /home/pi
+
+echo
+echo "---------------------------------------------"
+echo "----- Restoring the User's Config Files -----"
+echo "---------------------------------------------"
+
+
+grep -q "network:" "$PATHUBACKUP"/config.yaml
 if [ $? == 0 ]; then # User's config file is latest version, so simply copy back
   cp -f -r "$PATHUBACKUP"/config.yaml /home/pi/ryde/config.yaml >/dev/null 2>/dev/null
 else # User's config file needs updating, so copy master and reset remote control
@@ -321,7 +352,18 @@ else # User's config file needs updating, so copy master and reset remote contro
   if  [ $? == 0 ]; then   ## Amend new file for "xtrendkt1252" 32
     sed -i "/handsets:/{n;s/.*/        - xtrendkt1252/}" /home/pi/ryde/config.yaml
   fi
+  grep -q "salora" "$PATHUBACKUP"/config.yaml
+  if  [ $? == 0 ]; then   ## Amend new file for "salora" 33
+    sed -i "/handsets:/{n;s/.*/        - salora/}" /home/pi/ryde/config.yaml
+  fi
+  grep -q "streamzap" "$PATHUBACKUP"/config.yaml
+  if  [ $? == 0 ]; then   ## Amend new file for "streamzap" 34
+    sed -i "/handsets:/{n;s/.*/        - streamzap/}" /home/pi/ryde/config.yaml
+  fi
 fi
+
+cp -f -r "$PATHUBACKUP"/dvb-t_config.txt /home/pi/dvbt/dvb-t_config.txt >/dev/null 2>/dev/null
+
 
 # Record the version numbers
 
