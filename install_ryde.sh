@@ -81,6 +81,9 @@ sudo apt-get -y install python3-pil
 sudo apt-get -y install python3-gpiozero
 sudo apt-get -y install libfftw3-dev libjpeg-dev  # for DVB-T
 sudo apt-get -y install fbi netcat imagemagick    # for DVB-T
+sudo apt-get -y install python3-urwid             # for Ryde Utils
+
+pip3 install pyftdi                               # for Ryde Utils
 
 # Install WiringPi for the hardware shutdown button
 echo
@@ -185,6 +188,10 @@ sudo bash -c 'echo "# Increase GPU memory for 4k displays" >> /boot/config.txt '
 sudo bash -c 'echo "gpu_mem=128" >> /boot/config.txt '
 sudo bash -c 'echo " " >> /boot/config.txt '
 
+# Set the Composite Video Aspect Ratio to 4:3
+sudo bash -c 'echo -e "\n# Set the Composite Video Aspect Ratio. 1=4:3, 3=16:9" >> /boot/config.txt'
+sudo bash -c 'echo -e "sdtv_aspect=1\n" >> //boot/config.txt'
+
 # Reduce the dhcp client timeout to speed off-network startup
 sudo bash -c 'echo -e "\n# Shorten dhcpcd timeout from 30 to 5 secs" >> /etc/dhcpcd.conf'
 sudo bash -c 'echo -e "timeout 5\n" >> /etc/dhcpcd.conf'
@@ -250,6 +257,17 @@ cp -r /home/pi/ryde-build/configs/dvbt /home/pi/dvbt
 cd /home/pi/dvbt
 make
 cd /home/pi
+
+echo
+echo "-------------------------------------"
+echo "----- Installing the Ryde Utils -----"
+echo "-------------------------------------"
+echo
+
+wget https://github.com/eclispe/ryde-utils/archive/master.zip
+unzip -o master.zip
+mv ryde-utils-master ryde-utils
+rm master.zip
 
 
 echo

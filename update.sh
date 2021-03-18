@@ -80,6 +80,9 @@ sudo apt-get -y dist-upgrade # Upgrade all the installed packages to their lates
 sudo apt-get -y install python3-gpiozero  # for GPIOs
 sudo apt-get -y install libfftw3-dev libjpeg-dev  # for DVB-T
 sudo apt-get -y install fbi netcat imagemagick    # for DVB-T
+sudo apt-get -y install python3-urwid             # for Ryde Utils
+
+pip3 install pyftdi                               # for Ryde Utils
 
 if [ ! -f "/usr/lib/libwiringPi.so" ]; then       # Need to install WiringPi
   echo "Installing WiringPi"
@@ -122,6 +125,7 @@ echo "--------------------------------"
 echo "----- Updating pyDispmanx -----"
 echo "--------------------------------"
 echo
+
 wget https://github.com/eclispe/pyDispmanx/archive/master.zip
 unzip -o master.zip
 rm -rf pydispmanx
@@ -192,6 +196,13 @@ else  ## "#gpu_mem=128" is there, so amend it to read "gpu_mem=128"
   sudo sed -i 's/^#gpu_mem=128/gpu_mem=128/' /boot/config.txt 
 fi
 
+# If not already done, set the Composite Video Aspect Ratio to 4:3
+grep -q "sdtv_aspect" /boot/config.txt
+if [ $? -ne 0 ]; then  #  "sdtv_aspect" is not there so add it
+  sudo bash -c 'echo -e "\n# Set the Composite Video Aspect Ratio. 1=4:3, 3=16:9" >> /boot/config.txt'
+  sudo bash -c 'echo -e "sdtv_aspect=1\n" >> //boot/config.txt'
+fi
+
 # Amend /etc/fstab to create a tmpfs drive at ~/tmp for multiple writes (202101190)
 if grep -q /home/pi/tmp /etc/fstab; then
   echo "tmpfs already requested"
@@ -209,6 +220,18 @@ cp -r /home/pi/ryde-build/configs/dvbt /home/pi/dvbt
 cd /home/pi/dvbt
 make
 cd /home/pi
+
+echo
+echo "-----------------------------------"
+echo "----- Updating the Ryde Utils -----"
+echo "-----------------------------------"
+echo
+
+wget https://github.com/eclispe/ryde-utils/archive/master.zip
+unzip -o master.zip
+rm -rf ryde-utils
+mv ryde-utils-master ryde-utils
+rm master.zip
 
 echo
 echo "---------------------------------------------"
