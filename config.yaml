@@ -1,11 +1,12 @@
 ---
 configRev: 3
+playerID: "Ryde"
 sources:
     LONGMYND:
         binpath: /home/pi/longmynd/longmynd
         mediapath: /home/pi/lmmedia
         statuspath: /home/pi/lmstatus
-        tstimeout: 5000
+        tstimeout: 10000
     COMBITUNER:
         binpath: /home/pi/dvbt/CombiTunerExpress
         mediapath: /home/pi/ctmedia
@@ -225,3 +226,5 @@ debug:
     enableMenu: False
     autoplay: True
     disableHardwareCodec: True
+    useFTfont: False
+
