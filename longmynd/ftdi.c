@@ -41,7 +41,7 @@
 #define FTDI_VID 0x0403
 #define FTDI_PID 0x6010
 #define PICO_VID 0x2E8A
-#define PICO_PID 0x1234
+#define PICO_PID 0xBA2C
 
 #define FTDI_NUM_TRIES 10
 #define FTDI_STOP_START_REPEATS 4
