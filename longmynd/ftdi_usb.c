@@ -34,6 +34,7 @@
 #include "errors.h"
 #include "ftdi_usb.h"
 #include "ftdi.h"
+#include "stv0910.h"
 
 /* -------------------------------------------------------------------------------------------------- */
 /* ----------------- DEFINES ------------------------------------------------------------------------ */
@@ -341,6 +342,19 @@ static uint8_t ftdi_usb_init(libusb_context **usb_context_ptr, libusb_device_han
         	printf("ERROR: Unable to claim interface\n");
             err=ERROR_FTDI_USB_CLAIM;
         }
+
+        //check the device to see if it is a BATC Pico and if it needs Serial or Parallel TS
+        err=libusb_get_device_descriptor(libusb_get_device(*usb_device_handle_ptr),&usb_descriptor);
+        if((usb_descriptor.idVendor == altvid) && (usb_descriptor.idProduct == altpid) && (usb_descriptor.bcdDevice == 0x0102))
+	   {
+            stv0910_serialTS = 1;
+            printf("Serial TS mode Selected");
+           }
+        else
+           {
+            stv0910_serialTS = 0;
+            printf("Parallel TS Mode Selected");
+           }
     }
 
     return err;
